@@ -1,0 +1,44 @@
+import requests
+import json
+import os
+import base64
+from dotenv import load_dotenv
+
+load_dotenv()
+googleTextToSpeechKey = os.getenv('googleTextToSpeechKey')
+
+def google_text_to_speech(text, language_code='en-US', voice='en-US-Chirp-HD-O', output_format='MP3'):
+    url = f'https://texttospeech.googleapis.com/v1/text:synthesize?key={googleTextToSpeechKey}'
+    
+    headers = {
+        'Content-Type': 'application/json'
+    }
+    
+    data = {
+        'input': {
+            'text': text
+        },
+        'voice': {
+            'languageCode': language_code,
+            'name': voice
+        },
+        'audioConfig': {
+            'audioEncoding': output_format
+        }
+    }
+    
+    response = requests.post(url, headers=headers, data=json.dumps(data))
+    
+    if response.status_code == 200:
+        audio_content = response.json().get('audioContent')
+        
+        # Decode the Base64 audio content and save it to a file
+        with open('output.mp3', 'wb') as audio_file:
+            audio_file.write(base64.b64decode(audio_content))
+        print("Audio content written to file 'output.mp3'")
+    else:
+        print(f"Error: {response.status_code}, {response.text}")
+
+
+text = 'Hello, this is a text to speech conversion example!'
+google_text_to_speech(text)
