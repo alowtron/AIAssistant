@@ -31,14 +31,10 @@ def google_text_to_speech(text, language_code='en-US', voice='en-US-Chirp-HD-O',
     
     if response.status_code == 200:
         audio_content = response.json().get('audioContent')
-        
+        os.makedirs('audio', exist_ok=True)
         # Decode the Base64 audio content and save it to a file
-        with open('output.mp3', 'wb') as audio_file:
+        with open('audio/output.mp3', 'wb') as audio_file:
             audio_file.write(base64.b64decode(audio_content))
         print("Audio content written to file 'output.mp3'")
     else:
         print(f"Error: {response.status_code}, {response.text}")
-
-
-text = 'Hello, this is a text to speech conversion example!'
-google_text_to_speech(text)
